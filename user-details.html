@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link href="./input.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto mt-8 p-4">
+        <div class="mb-4">
+            <h1 class="text-2xl font-bold text-blue-600 cursor-pointer"><a href="index.html">Users > </a><span class="text-xl font-bold">John Doe</p></h1>
+        </div>
+        <div class="grid grid-cols-1 lg:border lg:border-black rounded-lg sm:grid-cols-3 bg-white-200 p-4">
+            <div class="border-t border-gray-200 ">
+                <h2 class="text-lg font-semibold text-blue-600">Contact Info</h2>
+                <ul class="mt-2">
+                    <li><strong>Username:</strong> johndoe</li>
+                    <li><strong>Email:</strong> <a href="mailto:john.doe@example.com" class="text-blue-600">john.doe@example.com</a></li>
+                    <li><strong>Phone:</strong> <a href="tel:+1234567890" class="text-blue-600">+1234567890</a></li>
+                    <li><strong>Website:</strong> <a href="http://example.com" target="_blank" class="text-blue-600">example.com</a></li>
+                </ul>
+            </div>
+            <div class="border-t border-gray-200 p-4">
+                <h2 class="text-lg font-semibold text-blue-600">Address</h2>
+                <p>Suite 123, Example Street, New York City, 12345</p>
+            </div>
+            <div class="border-t border-gray-200 p-4">
+                <h2 class="text-lg font-semibold text-blue-600">Company</h2>
+                <p><strong>Name:</strong> Example Inc.</p>
+                <p><strong>Business:</strong> Software Development</p>
+                <p><em>"Leading the way in innovation."</em></p>
+            </div>
+        </div>
+
+        <!-- Posts by User section -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-blue-600">Posts by User</h2>
+            <div class="posts lg:border-t lg:border-gray-200 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                <!-- Posts will be dynamically added here -->
+                <div class="bg-white-200 lg:border lg:border-black lg:shadow-md lg:rounded-lg lg:p-4">
+                    <h3 class="text-lg font-semibold">Post Title 1</h3>
+                    <p class="text-gray-600 mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+                <!-- Add more post cards as needed -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Extract user id from URL query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('id');
+
+            // Fetch user details
+            fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+                .then(response => response.json())
+                .then(user => {
+                    // Update UI with user details
+                    document.title = `User Details - ${user.name}`;
+                    document.querySelector('.text-xl.font-bold').textContent = user.name;
+                    document.querySelector('ul').innerHTML = `
+                        <li><strong>Username:</strong> ${user.username}</li>
+                        <li><strong>Email:</strong> <a href="mailto:${user.email}" class="text-blue-600">${user.email}</a></li>
+                        <li><strong>Phone:</strong> <a href="tel:${user.phone}" class="text-blue-600">${user.phone}</a></li>
+                        <li><strong>Website:</strong> <a href="${user.website}" target="_blank" class="text-blue-600">${user.website}</a></li>
+                    `;
+                    document.querySelector('p:nth-of-type(4)').textContent = `${user.address.suite} ${user.address.street}, ${user.address.city}, ${user.address.zipcode}`;
+                    document.querySelector('p:nth-of-type(7)').textContent = user.company.name;
+                    document.querySelector('p:nth-of-type(8)').textContent = user.company.bs;
+                    document.querySelector('p:nth-of-type(9)').innerHTML = `<em>&ldquo;${user.company.catchPhrase}&rdquo;</em>`;
+                })
+                .catch(error => console.error('Error fetching user:', error));
+
+            // Fetch user's posts
+            fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
+                .then(response => response.json())
+                .then(posts => {
+                    const postsContainer = document.querySelector('.posts');
+                    posts.forEach(post => {
+                        const postCard = document.createElement('div');
+                        postCard.classList.add('bg-white-200','border-t', 'border-gray-400','p-4' ,'lg:border', 'lg:border-black' );
+                        postCard.innerHTML = `
+                            <h3 class="text-lg font-semibold">${post.title}</h3>
+                            <p class="text-gray-600 mt-2">${post.body}</p>
+                        `;
+                        postsContainer.appendChild(postCard);
+                    });
+                })
+                .catch(error => console.error('Error fetching posts:', error));
+        });
+    </script>
+</body>
+</html>
